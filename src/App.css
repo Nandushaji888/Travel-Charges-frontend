@@ -1,0 +1,7 @@
+body{
+  background-image: url(/train-blak-white_181624-379.avif);
+  background-size: cover; /* Ensure the image covers the entire background */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-attachment: fixed;
+  z-index: 10;
+}

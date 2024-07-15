@@ -2,50 +2,55 @@
 /* eslint-disable react/no-unescaped-entities */
 
 import axios from "axios";
-import {  useState } from "react";
+import { useState } from "react";
 
 export default function ZeroCardRechargeModal({
   paymentModal,
   setPaymentModal,
-  fetchBalance
+  fetchBalance,
 }) {
   // const baseUrl = "http://localhost:5000/api";
   const [rechargeAmount, setRechargeAmount] = useState("");
   const [ZeroCardNumber, setZeroCardNumber] = useState("");
-  const [error, setError] = useState("");
+  const [serviceCharge, setServiceCharge] = useState("");
+  const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const baseUrl = "http://localhost:5000/api";
-
-
-
-
 
   const handleRecharge = async () => {
     setLoading(true);
 
     // Handle the recharge logic here
     try {
-      setError("");
+      setMessage("");
       const response = await axios.post(`${baseUrl}/recharge`, {
         ZeroCardNumber,
         rechargeAmount,
+        serviceCharge,
       });
-      if(response){
-        fetchBalance()
-        setPaymentModal(false)
+      if (response) {
+        fetchBalance();
+        setMessage("Recharge Successfull");
+        setTimeout(() => {
+          setPaymentModal(false);
+        }, 1500);
       }
-     
     } catch (error) {
       console.log("error.response");
       console.log(error.response?.data?.message);
       if (error.response?.status === 404) {
-        setError(error?.response?.data?.message);
+        setMessage(error?.response?.data?.message);
       } else if (error?.response?.status === 500) {
-        setError(error?.response?.data?.message);
+        setMessage(error?.response?.data?.message);
       }
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAmount = (e) => {
+    setRechargeAmount(e.target.value);
+    setServiceCharge((e.target.value * 5) / 100);
   };
 
   return (
@@ -77,11 +82,22 @@ export default function ZeroCardRechargeModal({
                     name="rechargeAmount"
                     id="rechargeAmount"
                     value={rechargeAmount}
-                    onChange={(e) => setRechargeAmount(e.target.value)}
+                    onChange={handleAmount}
                     className="border border-black p-2 rounded"
                   />{" "}
-                  {error && (
-                    <div className="mt-3 text-red-500 font-bold">{error}</div>
+                  {serviceCharge && (
+                    <>
+                      <div className="mt-3 text-blue-800 font-bold">
+                        Service Charge : {serviceCharge}
+                      </div>
+                      <div className="mt-3 text-blue-800 font-bold">
+                        Total Amount to be Deducted:{" "}
+                        {Number(serviceCharge) + Number(rechargeAmount)}
+                      </div>
+                    </>
+                  )}
+                  {message && (
+                    <div className="mt-3 text-red-500 font-bold">{message}</div>
                   )}
                 </div>
 

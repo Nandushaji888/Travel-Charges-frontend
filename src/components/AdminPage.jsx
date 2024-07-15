@@ -3,16 +3,19 @@ import { useEffect, useState } from "react";
 
 const AdminPage = () => {
   const baseUrl = "http://localhost:5000/api";
+  const [loading,setLoading]=useState(false)
   const [charges, setCharges] = useState(null);
 
   useEffect(() => {
+    setLoading(false)
     axios.get(`${baseUrl}/admin-details`).then((res) => {
       console.log(res);
       setCharges(res.data);
     });
+    setLoading(false)
   }, []);
 
-  if (!charges) {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
